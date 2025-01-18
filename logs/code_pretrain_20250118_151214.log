@@ -1,0 +1,61 @@
+2025-01-18 15:12:15,313 [INFO] 设置 pad_token 为 eos_token: </s>
+2025-01-18 15:12:17,185 [INFO] 成功加载预训练权重: ./out/pretrain.pth
+2025-01-18 15:12:17,186 [INFO] LLM总参数量：26.878 百万
+2025-01-18 15:12:17,454 [INFO] 处理完成代码文件数量: 5655
+2025-01-18 15:12:18,907 [INFO] Epoch 0, Batch 0, Loss: 13.1633
+2025-01-18 15:12:20,367 [INFO] Epoch 0, Batch 10, Loss: 0.0020
+2025-01-18 15:12:21,826 [INFO] Epoch 0, Batch 20, Loss: 0.0002
+2025-01-18 15:12:23,282 [INFO] Epoch 0, Batch 30, Loss: 0.0001
+2025-01-18 15:12:24,736 [INFO] Epoch 0, Batch 40, Loss: 0.0001
+2025-01-18 15:12:26,191 [INFO] Epoch 0, Batch 50, Loss: 0.0000
+2025-01-18 15:12:27,646 [INFO] Epoch 0, Batch 60, Loss: 0.0000
+2025-01-18 15:12:29,101 [INFO] Epoch 0, Batch 70, Loss: 0.0000
+2025-01-18 15:12:30,556 [INFO] Epoch 0, Batch 80, Loss: 0.0000
+2025-01-18 15:12:32,010 [INFO] Epoch 0, Batch 90, Loss: 0.0000
+2025-01-18 15:12:33,468 [INFO] Epoch 0, Batch 100, Loss: 0.0000
+2025-01-18 15:12:34,926 [INFO] Epoch 0, Batch 110, Loss: 0.0000
+2025-01-18 15:12:36,385 [INFO] Epoch 0, Batch 120, Loss: 0.0000
+2025-01-18 15:12:37,842 [INFO] Epoch 0, Batch 130, Loss: 0.0000
+2025-01-18 15:12:39,302 [INFO] Epoch 0, Batch 140, Loss: 0.0000
+2025-01-18 15:12:40,760 [INFO] Epoch 0, Batch 150, Loss: 0.0000
+2025-01-18 15:12:42,221 [INFO] Epoch 0, Batch 160, Loss: 0.0000
+2025-01-18 15:12:43,677 [INFO] Epoch 0, Batch 170, Loss: 0.0000
+2025-01-18 15:12:44,570 [INFO] Epoch 0 Average Loss: 0.3487
+2025-01-18 15:12:45,809 [INFO] Epoch 1, Batch 0, Loss: 0.0000
+2025-01-18 15:12:47,263 [INFO] Epoch 1, Batch 10, Loss: 0.0000
+2025-01-18 15:12:48,721 [INFO] Epoch 1, Batch 20, Loss: 0.0000
+2025-01-18 15:12:50,178 [INFO] Epoch 1, Batch 30, Loss: 0.0000
+2025-01-18 15:12:51,636 [INFO] Epoch 1, Batch 40, Loss: 0.0000
+2025-01-18 15:12:53,095 [INFO] Epoch 1, Batch 50, Loss: 0.0000
+2025-01-18 15:12:54,554 [INFO] Epoch 1, Batch 60, Loss: 0.0000
+2025-01-18 15:12:56,014 [INFO] Epoch 1, Batch 70, Loss: 0.0000
+2025-01-18 15:12:57,473 [INFO] Epoch 1, Batch 80, Loss: 0.0000
+2025-01-18 15:12:58,934 [INFO] Epoch 1, Batch 90, Loss: 0.0000
+2025-01-18 15:13:00,395 [INFO] Epoch 1, Batch 100, Loss: 0.0000
+2025-01-18 15:13:01,859 [INFO] Epoch 1, Batch 110, Loss: 0.0000
+2025-01-18 15:13:03,322 [INFO] Epoch 1, Batch 120, Loss: 0.0000
+2025-01-18 15:13:04,786 [INFO] Epoch 1, Batch 130, Loss: 0.0000
+2025-01-18 15:13:06,251 [INFO] Epoch 1, Batch 140, Loss: 0.0000
+2025-01-18 15:13:07,715 [INFO] Epoch 1, Batch 150, Loss: 0.0000
+2025-01-18 15:13:09,180 [INFO] Epoch 1, Batch 160, Loss: 0.0000
+2025-01-18 15:13:10,647 [INFO] Epoch 1, Batch 170, Loss: 0.0000
+2025-01-18 15:13:11,561 [INFO] Epoch 1 Average Loss: 0.0000
+2025-01-18 15:13:13,475 [INFO] Epoch 2, Batch 0, Loss: 0.0000
+2025-01-18 15:13:14,941 [INFO] Epoch 2, Batch 10, Loss: 0.0000
+2025-01-18 15:13:16,406 [INFO] Epoch 2, Batch 20, Loss: 0.0000
+2025-01-18 15:13:17,872 [INFO] Epoch 2, Batch 30, Loss: 0.0000
+2025-01-18 15:13:19,338 [INFO] Epoch 2, Batch 40, Loss: 0.0000
+2025-01-18 15:13:20,803 [INFO] Epoch 2, Batch 50, Loss: 0.0000
+2025-01-18 15:13:22,269 [INFO] Epoch 2, Batch 60, Loss: 0.0000
+2025-01-18 15:13:23,736 [INFO] Epoch 2, Batch 70, Loss: 0.0000
+2025-01-18 15:13:25,203 [INFO] Epoch 2, Batch 80, Loss: 0.0000
+2025-01-18 15:13:26,673 [INFO] Epoch 2, Batch 90, Loss: 0.0000
+2025-01-18 15:13:28,140 [INFO] Epoch 2, Batch 100, Loss: 0.0000
+2025-01-18 15:13:29,608 [INFO] Epoch 2, Batch 110, Loss: 0.0000
+2025-01-18 15:13:31,077 [INFO] Epoch 2, Batch 120, Loss: 0.0000
+2025-01-18 15:13:32,544 [INFO] Epoch 2, Batch 130, Loss: 0.0000
+2025-01-18 15:13:34,014 [INFO] Epoch 2, Batch 140, Loss: 0.0000
+2025-01-18 15:13:35,483 [INFO] Epoch 2, Batch 150, Loss: 0.0000
+2025-01-18 15:13:36,951 [INFO] Epoch 2, Batch 160, Loss: 0.0000
+2025-01-18 15:13:38,421 [INFO] Epoch 2, Batch 170, Loss: 0.0000
+2025-01-18 15:13:39,314 [INFO] Epoch 2 Average Loss: 0.0000
