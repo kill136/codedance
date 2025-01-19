@@ -8,6 +8,7 @@ from model.model import Transformer, LMConfig
 from utils.logger import Logger
 import argparse
 from transformers import AutoTokenizer
+import sys
 
 def init_model_and_tokenizer(pretrained_path, device):
     """初始化模型和tokenizer"""
@@ -44,10 +45,10 @@ def init_model_and_tokenizer(pretrained_path, device):
 
 def main():
     parser = argparse.ArgumentParser(description="Code Repository Specific Pretraining")
-    parser.add_argument("--pretrained_path", type=str, default="./out/pretrain.pth",
+    parser.add_argument("--pretrained_path", type=str, default="./out/pretrain_512.pth",
                       help="预训练模型权重路径")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--batch_size", type=int, default=80)
     parser.add_argument("--learning_rate", type=float, default=1e-5,
                   help="Learning rate for fine-tuning")
     parser.add_argument("--num_epochs", type=int, default=3)
@@ -66,15 +67,17 @@ def main():
     processor = CodeRepoProcessor(config)
     processed_files = processor.process_repo()
     Logger(f'处理完成代码文件数量: {len(processed_files)}')
+   
     
     # 4. 创建数据集和加载器
     dataset = CodePretrainDataset(
         processed_files=processed_files,
         tokenizer=tokenizer,
         config=config,
-        max_length=5120
+        max_length=512,  # 最大序列长度
+        stride=256 
     )
-    
+    Logger(f'数据集长度: {len(dataset)}')
     dataloader = DataLoader(
         dataset,
         batch_size=args.batch_size,
@@ -104,19 +107,19 @@ def main():
             input_ids = batch['input_ids'].to(args.device)
             attention_mask = batch['attention_mask'].to(args.device)
             
-            # 前向传播
+            # 添加梯度检查
+            if batch_idx == 0:
+                param_before = next(model.parameters()).clone().detach()
+            
+            # 前向传播和反向传播
             with ctx:
-                # 确保输入和标签的形状正确
                 outputs = model(
                     input_ids=input_ids,
                     attention_mask=attention_mask,
-                    labels=input_ids  # 使用输入作为标签
+                    labels=input_ids
                 )
+                loss = outputs.loss
                 
-                # 获取损失
-                loss = outputs.loss  # 这应该是一个标量值
-                
-                # 如果loss仍然是None，我们可以手动计算交叉熵损失
                 if loss is None:
                     logits = outputs.logits
                     shift_logits = logits[..., :-1, :].contiguous()
@@ -125,9 +128,7 @@ def main():
                     loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), 
                                   shift_labels.view(-1))
                     
-                    # 应用attention mask
                     if attention_mask is not None:
-                        # 调整mask以匹配shifted序列
                         shift_mask = attention_mask[..., 1:].contiguous()
                         loss_mask = shift_mask.view(-1).float()
                         loss = torch.sum(loss * loss_mask) / loss_mask.sum()
@@ -145,10 +146,20 @@ def main():
             scaler.update()
             scheduler.step()
             
+            # 检查参数是否更新
+            if batch_idx == 0:
+                param_after = next(model.parameters()).clone().detach()
+                param_diff = (param_before - param_after).abs().mean().item()
+                Logger(f"Epoch {epoch} 首批次参数变化量: {param_diff:.8f}")
+            
             total_loss += loss.item()
             
             if batch_idx % 10 == 0:
                 Logger(f'Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item():.4f}')
+        
+        # 每个epoch结束时检查并打印一些模型状态
+        Logger(f"Epoch {epoch} 优化器学习率: {optimizer.param_groups[0]['lr']:.8f}")
+        Logger(f"Epoch {epoch} 优化器状态大小: {sys.getsizeof(optimizer.state_dict())}")
         
         avg_loss = total_loss / len(dataloader)
         Logger(f'Epoch {epoch} Average Loss: {avg_loss:.4f}')

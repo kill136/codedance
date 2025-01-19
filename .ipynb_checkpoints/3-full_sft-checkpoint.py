@@ -141,7 +141,7 @@ def init_distributed_mode():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MiniMind Full SFT")
     parser.add_argument("--out_dir", type=str, default="out", help="Output directory")
-    parser.add_argument("--epochs", type=int, default=1, help="Number of epochs")
+    parser.add_argument("--epochs", type=int, default=4, help="Number of epochs")
     parser.add_argument("--batch_size", type=int, default=100, help="Batch size")
     parser.add_argument("--learning_rate", type=float, default=1e-4, help="Learning rate")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu", help="Device to use")

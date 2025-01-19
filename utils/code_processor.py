@@ -97,27 +97,74 @@ class CodeRepoProcessor:
         return processed_files
 
 class CodePretrainDataset(Dataset):
-    def __init__(self, processed_files: List[Dict], tokenizer, config: CodePretrainConfig, max_length: int = 512):
+    def __init__(self, processed_files: List[Dict], tokenizer, config: CodePretrainConfig, max_length: int = 512, stride: int = 256):
         """
         Args:
             processed_files: 处理后的代码文件列表
             tokenizer: tokenizer实例
             config: CodePretrainConfig实例
             max_length: 最大序列长度
+            stride: 滑动窗口的步长，决定相邻片段的重叠程度
         """
-        self.processed_files = processed_files
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.config = config
+        self.stride = stride
         
-    def __len__(self):
-        return len(self.processed_files)
+        # 预处理所有文件，将长文件分割成多个片段
+        self.segments = []
         
-    def __getitem__(self, idx):
-        file_data = self.processed_files[idx]
-        
-        # 构建输入文本
-        text = (
+        for file_data in processed_files:
+            # 构建完整输入文本
+            text = self._construct_input_text(file_data)
+            
+            # 获取完整文本的token
+            tokens = tokenizer(text, truncation=False)
+            input_ids = tokens['input_ids']
+            
+            # 如果文本长度小于max_length，直接添加
+            if len(input_ids) <= max_length:
+                self.segments.append({
+                    'input_ids': input_ids,
+                    'file_info': file_data
+                })
+            else:
+                # 使用滑动窗口分割长文本
+                for start in range(0, len(input_ids), stride):
+                    end = start + max_length
+                    segment = input_ids[start:end]
+                    
+                    # 确保最后一个片段长度为max_length
+                    if len(segment) < max_length:
+                        if start > 0:  # 不是第一个片段
+                            # 从末尾往前取max_length个token
+                            segment = input_ids[-max_length:]
+                        else:  # 文本总长度小于max_length
+                            continue
+                    
+                    self.segments.append({
+                        'input_ids': segment,
+                        'file_info': {
+                            **file_data,
+                            'segment_start': start,
+                            'is_full_file': len(input_ids) <= max_length
+                        }
+                    })
+                   
+                    # 如果这是最后一个片段，跳出循环
+                    if end >= len(input_ids):
+                        break
+        # 输出segments 到文件
+        with open('./dataset/pretrain_data.csv', 'w', encoding='utf-8') as f:
+            for segment in self.segments:
+                f.write(f"{segment['input_ids']}\n")
+                f.write(f"{segment['file_info']}\n")
+                
+        print(f"总文件数: {len(processed_files)}, 生成片段数: {len(self.segments)}")
+    
+    def _construct_input_text(self, file_data):
+        """构建输入文本"""
+        return (
             f"{self.config.code_special_tokens['repo_start']}"
             f"{self.config.repo_name}\n"
             f"{self.config.code_special_tokens['file_start']}"
@@ -127,18 +174,26 @@ class CodePretrainDataset(Dataset):
             f"{self.config.code_special_tokens['repo_end']}"
         )
         
-        # 编码文本
-        encodings = self.tokenizer(
-            text,
-            max_length=self.max_length,
-            padding='max_length',
-            truncation=True,
-            return_tensors="pt",
-            return_attention_mask=True,
-            pad_to_max_length=True
-        )
+    def __len__(self):
+        return len(self.segments)
+        
+    def __getitem__(self, idx):
+        segment = self.segments[idx]
+        input_ids = torch.tensor(segment['input_ids'])
+        
+        # 如果长度不足max_length，进行padding
+        if len(input_ids) < self.max_length:
+            padding_length = self.max_length - len(input_ids)
+            input_ids = torch.cat([
+                input_ids,
+                torch.full((padding_length,), self.tokenizer.pad_token_id)
+            ])
+        
+        # 创建attention mask
+        attention_mask = torch.ones_like(input_ids)
+        attention_mask[input_ids == self.tokenizer.pad_token_id] = 0
         
         return {
-            'input_ids': encodings['input_ids'].squeeze(),
-            'attention_mask': encodings['attention_mask'].squeeze()
+            'input_ids': input_ids,
+            'attention_mask': attention_mask
         } 
